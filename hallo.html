@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I made this website for my crush</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #ffb3c6, #ffdfd3);
+            color: #4a3b40;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 12px 30px rgba(255, 130, 160, 0.25);
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s ease;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.6s ease-in-out forwards;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #ff5e84;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #634d54;
+        }
+
+        .sub-text {
+            font-style: italic;
+            color: #a3858f;
+            margin-bottom: 20px;
+        }
+
+        /* PIN KEYPAD DESIGN LIKE SCREENSHOT */
+        .pin-dots-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .pin-dot {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ff85a2;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+        .pin-dot.filled {
+            background-color: #ff5e84;
+            border-color: #ff5e84;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 280px;
+            margin-bottom: 10px;
+        }
+
+        .key {
+            background: none;
+            border: 2px solid rgba(255, 94, 132, 0.4);
+            color: #ff5e84;
+            font-size: 24px;
+            font-weight: 600;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: auto;
+            user-select: none;
+        }
+
+        .key:hover {
+            background-color: rgba(255, 94, 132, 0.1);
+        }
+
+        .key:active {
+            background-color: #ff5e84;
+            color: white;
+            transform: scale(0.95);
+        }
+
+        .key.clear-btn {
+            font-size: 12px;
+            font-weight: bold;
+            border-color: transparent;
+            color: #a3858f;
+        }
+        
+        .key.clear-btn:hover {
+            background: none;
+            color: #ff5e84;
+        }
+
+        /* CUSTOM POPUP MODAL FOR ERROR PIN */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 85%;
+            max-width: 340px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-icon-circle {
+            width: 70px;
+            height: 70px;
+            border: 3px solid #ff6b6b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            color: #ff6b6b;
+            font-size: 35px;
+            font-weight: bold;
+        }
+
+        .modal-box h2 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .modal-box p {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .modal-btn {
+            background-color: #ff5e84;
+            color: white;
+            border: none;
+            padding: 10px 35px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* BUTTONS & OTHER UTILITIES */
+        button.action-btn {
+            background-color: #ff5e84;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            margin: 5px;
+        }
+
+        button.action-btn:hover { background-color: #ff3b68; }
+        button.action-btn:active { transform: scale(0.98); }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ffd0dc;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            outline: none;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+            min-height: 60px;
+            width: 100%;
+        }
+
+        #noBtn1, #noBtn2 {
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .poem-text {
+            background: #221a1d;
+            color: #fceef1;
+            padding: 22px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: left;
+            line-height: 1.8;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+            white-space: pre-line;
+            min-height: 150px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .poem-full {
+            text-align: left;
+            white-space: pre-line;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #4a3b40;
+            background: #fff0f3;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #ff5e84;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .hidden-audio { display: none; }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" class="hidden-audio" loop>
+        <source src="/SpotiDown.App - Membasuh - Hindia (1).mp3" controls></audio>
+
+    <div id="errorModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-icon-circle">✕</div>
+            <h2>PIN Salah!</h2>
+            <p>Salah nih 😜 Coba pakai tanggal lahir kamu</p>
+            <button class="modal-btn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div id="screen1" class="screen active">
+            <h1>I made this website for my crush💐😶‍🌫️</h1>
+            <p class="sub-text">—for Balita/Aisyah—</p>
+            <button class="action-btn" onclick="nextScreen(2)">Buka Website</button>
+        </div>
+
+        <div id="screen2" class="screen">
+            <h1 style="color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.15); margin-bottom: 5px;">Enter Secret PIN</h1>
+            
+            <div class="pin-dots-container">
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+            </div>
+
+            <div class="keypad">
+                <div class="key" onclick="pressKey('1')">1</div>
+                <div class="key" onclick="pressKey('2')">2</div>
+                <div class="key" onclick="pressKey('3')">3</div>
+                <div class="key" onclick="pressKey('4')">4</div>
+                <div class="key" onclick="pressKey('5')">5</div>
+                <div class="key" onclick="pressKey('6')">6</div>
+                <div class="key" onclick="pressKey('7')">7</div>
+                <div class="key" onclick="pressKey('8')">8</div>
+                <div class="key" onclick="pressKey('9')">9</div>
+                <div></div> <div class="key" onclick="pressKey('0')">0</div>
+                <div class="key clear-btn" onclick="clearPin()">CLEAR</div>
+            </div>
+        </div>
+
+        <div id="screen3" class="screen">
+            <h1>a-anuu...balitaa masih suka aji ya🤔🫥..??</h1>
+            <div class="btn-group">
+                <button class="action-btn" onclick="nextScreen(4)">Yes!</button>
+                <button id="noBtn1" class="action-btn" onclick="shrinkNoBtn(1)">No</button>
+            </div>
+        </div>
+
+        <div id="screen4" class="screen">
+            <h1>k-kamu juga suka sepupu kamu??!!🫠🥺</h1>
+            <div class="btn-group">
+                <button class="action-btn" onclick="nextScreen(5)">Yes!</button>
+                <button id="noBtn2" class="action-btn" onclick="shrinkNoBtn(2)">No</button>
+            </div>
+        </div>
+
+        <div id="screen5" class="screen">
+            <h1>oh gitu ya!!, hehe gak papa kok.😔</h1>
+            <button class="action-btn" onclick="nextScreen(6)">Next</button>
+        </div>
+
+        <div id="screen6" class="screen">
+            <h1>ada yang aku ingin ceritain ke kamu😗!!</h1>
+            <button class="action-btn" onclick="startPoemJourney()">Next</button>
+        </div>
+
+        <div id="screen7" class="screen">
+            <div class="poem-text" id="poemPartDisplay">Loading...</div>
+            <button id="poemNextBtn" class="action-btn" onclick="nextPoemPart()">Next</button>
+        </div>
+
+        <div id="screen8" class="screen">
+            <div class="poem-full">Hari kelulusan itu datang
+dengan tawa dan suara kamera.
+Semua tampak bahagia,
+sedangkan aku sibuk kehilanganmu.
+
+Aku melihatmu di tengah ramai,
+lalu sadar sesuatu perlahan menghilang.
+Setelah hari ini selesai,
+aku mungkin tak bertemu lagi denganmu.
+
+Aku ingin memanggil namamu,
+menahanmu lebih lama sedikit.
+Tapi waktu berjalan terlalu cepat,
+dan keberanian selalu datang terlambat.</div>
+            <button class="action-btn" onclick="nextScreen(9)">Next</button>
+        </div>
+
+        <div id="screen9" class="screen">
+            <h1>ini flowers buat kamuu, di terima yaa💐💐💐</h1>
+            <div class="btn-group">
+                <button class="action-btn" onclick="nextScreen(10)">Terima</button>
+                <button class="action-btn" onclick="rejectFlowers()" style="background-color: #a3858f;">Tolak</button>
+            </div>
+        </div>
+
+        <div id="screen10" class="screen">
+            <h1>yeyy flowers nya di terima!!💐</h1>
+            <p>maaf yaa kalo aku rada ngeselin🫣. hii!!</p>
+            <button class="action-btn" onclick="nextScreen(11)">Next</button>
+        </div>
+
+        <div id="screen11" class="screen">
+            <h1>kirim aku pesan apa saja yang ada di dalam hati mungil mu itu. hiii!!😗</h1>
+            <textarea id="heartMessage" rows="4" placeholder="Tulis pesanmu di sini..."></textarea>
+            <button class="action-btn" onclick="sendMessage()">Kirim Pesan</button>
+        </div>
+
+    </div>
+
+    <script>
+        let noBtnScale1 = 1.0;
+        let noBtnScale2 = 1.0;
+        let inputPin = "";
+        const TARGET_PIN = "20102512"; // Pin 8 digit rahasia kamu
+        
+        // Rangkaian kompilasi puisi bertahap dengan kata sambung "dan..."
+        const poemParts = [
+            // PUISI 1: Usia Semesta
+            "entah bagaimana umat manusia berhasil menghitung usia semesta hingga 13,8 miliar tahun,",
+            "memotret lubang hitam,",
+            "menemukan ribuan planet baru,",
+            "menciptakan hukum-hukum fisika,",
+            "dan memecahkan begitu banyak persoalan rumit di alam semesta.",
+            "namun anehnya, mereka tetap tidak mampu menjelaskan, dari 8,3 miliar manusia yang hidup di bumi,",
+            "mengapa cantiknya surga hanya ada di ujung bibirmu, seolah kelahiranmu bertujuan untuk menanggung seluruh cantiknya planet ini.",
+            
+            // Jembatan penyambung ke puisi berikutnya
+            "dan...",
+            
+            // PUISI 2: Semesta Penulis
+            "jika semesta adalah penulis,\nmaka kamu adalah paragraf terindahnya.",
+            "jika waktu adalah pelukis,\nmaka kamu adalah warna yang mempesonanya.",
+            "di antara miliaran kemungkinan,\ndi antara tak terhitung percabangan takdir,",
+            "realitas tetap memilih satu hal sederhana: menghadirkanmu.",
+            
+            // Jembatan penyambung ke puisi berikutnya
+            "dan...",
+            
+            // PUISI 3: Kebetulan Semesta
+            "kebetulan semesta mengembang bersama sejak 13,8 miliar tahun lalu,",
+            "kebetulan kita ditempatkan di planet yang sama,",
+            "kebetulan dinosaurus punah karena asteroid yang menabrak bumi,",
+            "kebetulan leluhurmu selamat dari perang-perang besar hingga melahirkanmu,",
+            "dan kebetulan aku hidup di tanah serta waktu yang sama denganmu;",
+            "maka jika dunia dipenuhi dengan kebetulan, bertemu denganmu adalah kebetulan paling manis dari jutaan kemungkinan yang pernah disusun semesta untukku."
+        ];
+        
+        let currentPartIndex = 0;
+
+        function nextScreen(screenNum) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById('screen' + screenNum).classList.add('active');
+        }
+
+        /* LOGIK KEYPAD PIN BARU */
+        function pressKey(num) {
+            if (inputPin.length < 8) {
+                inputPin += num;
+                updatePinDots();
+                
+                // Jika sudah genap 8 digit, langsung lakukan verifikasi pengecekan otomatis
+                if (inputPin.length === 8) {
+                    setTimeout(verifyPin, 250);
+                }
+            }
+        }
+
+        function clearPin() {
+            inputPin = "";
+            updatePinDots();
+        }
+
+        function updatePinDots() {
+            const dots = document.querySelectorAll('.pin-dot');
+            dots.forEach((dot, index) => {
+                if (index < inputPin.length) {
+                    dot.classList.add('filled');
+                } else {
+                    dot.classList.remove('filled');
+                }
+            });
+        }
+
+        function verifyPin() {
+            if (inputPin === TARGET_PIN) {
+                nextScreen(3);
+            } else {
+                showModal();
+                clearPin();
+            }
+        }
+
+        function showModal() {
+            document.getElementById('errorModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('errorModal').style.display = 'none';
+        }
+
+        /* FUNGSIONAL TOMBOL "NO" MENYUSUT */
+        function shrinkNoBtn(num) {
+            const btn = document.getElementById('noBtn' + num);
+            if (num === 1) {
+                noBtnScale1 -= 0.25;
+                if (noBtnScale1 <= 0.2) { btn.style.display = 'none'; return; }
+                btn.style.transform = `scale(${noBtnScale1})`;
+                btn.style.left = (Math.random() * 60 - 30) + 'px';
+                btn.style.top = (Math.random() * 40 - 20) + 'px';
+            } else {
+                noBtnScale2 -= 0.25;
+                if (noBtnScale2 <= 0.2) { btn.style.display = 'none'; return; }
+                btn.style.transform = `scale(${noBtnScale2})`;
+                btn.style.left = (Math.random() * 60 - 30) + 'px';
+                btn.style.top = (Math.random() * 40 - 20) + 'px';
+            }
+        }
+
+        /* TIMELINE ALUR JALANNYA PUISI */
+        function startPoemJourney() {
+            const music = document.getElementById('bgMusic');
+            music.play().catch(error => { console.log("Autoplay music ditahan browser."); });
+            
+            currentPartIndex = 0;
+            document.getElementById('poemPartDisplay').innerText = poemParts[currentPartIndex];
+            nextScreen(7);
+        }
+
+        function nextPoemPart() {
+            currentPartIndex++;
+            if (currentPartIndex < poemParts.length) {
+                document.getElementById('poemPartDisplay').innerText = poemParts[currentPartIndex];
+            } else {
+                // Semua part rangkaian habis, lanjut ke Puisi Kelulusan secara utuh sekaligus
+                nextScreen(8);
+            }
+        }
+
+        function rejectFlowers() {
+            alert("Kamu menolak bunga... Otomatis keluar dari halaman.");
+            window.close();
+            window.location.href = "https://www.google.com";
+        }
+
+        function sendMessage() {
+            const text = document.getElementById('heartMessage').value;
+            if(!text.trim()) {
+                alert("Isi pesanmu dulu yaa...");
+                return;
+            }
+            const phoneNumber = "6283135432197"; 
+            const encodedText = encodeURIComponent(text);
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodedText}`;
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
+</body>
+</html>
